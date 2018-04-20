@@ -13,7 +13,7 @@ class ArticlesTableViewCell: UITableViewCell {
     @IBOutlet weak var website: UILabel!
     @IBOutlet weak var authors: UILabel!
     @IBOutlet weak var date: UILabel!
-    
+    @IBOutlet var imageCell: UIImageView!
     override func awakeFromNib(){
         super.awakeFromNib()
     }

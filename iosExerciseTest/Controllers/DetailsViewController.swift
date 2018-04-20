@@ -10,14 +10,38 @@ import UIKit
 
 class DetailsViewController: UIViewController {
      var details: Articles?
-
+    @IBOutlet var detailImage: UIImageView!
+    
+    @IBOutlet var detailTitle: UILabel!
+    @IBOutlet var detailWebsite: UILabel!
+    @IBOutlet var detailDate: UILabel!
+    @IBOutlet var detailAuthor: UILabel!
+    @IBOutlet var contentTextView: UITextView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = details?.date
-        print(details?.authors)
-        // Do any additional setup after loading the view.
+        setupUI()
+
     }
 
+    func setupUI() {
+        
+        //setup image lazily.
+        if !(details?.image_url?.isEmpty)! {
+            detailImage.downloadImageFrom(link: (details?.image_url)!, contentMode: UIViewContentMode.scaleToFill)
+        }
+        else {
+            detailImage.image = UIImage(named: "task")
+        }
+        //setup labels.
+        detailTitle.text = details?.title
+        detailWebsite.text = details?.website
+        detailDate.text = details?.date
+        detailAuthor.text = details?.authors
+        contentTextView.text = details?.content
+        
+        
+    }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

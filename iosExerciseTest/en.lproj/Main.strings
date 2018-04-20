@@ -1,0 +1,27 @@
+
+/* Class = "UILabel"; text = "website"; ObjectID = "BxR-qC-ufS"; */
+"BxR-qC-ufS.text" = "website";
+
+/* Class = "UILabel"; text = "date"; ObjectID = "IdY-SL-3e3"; */
+"IdY-SL-3e3.text" = "date";
+
+/* Class = "UILabel"; text = "website"; ObjectID = "KnE-bC-MZJ"; */
+"KnE-bC-MZJ.text" = "website";
+
+/* Class = "UILabel"; text = "title"; ObjectID = "U12-PL-9YO"; */
+"U12-PL-9YO.text" = "title";
+
+/* Class = "UILabel"; text = "authors"; ObjectID = "VVJ-TX-1Vk"; */
+"VVJ-TX-1Vk.text" = "authors";
+
+/* Class = "UILabel"; text = "date"; ObjectID = "VaY-AL-AU2"; */
+"VaY-AL-AU2.text" = "date";
+
+/* Class = "UITextView"; text = "Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda."; ObjectID = "hBe-iA-shR"; */
+"hBe-iA-shR.text" = "Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.";
+
+/* Class = "UILabel"; text = "authors"; ObjectID = "maH-xI-3CV"; */
+"maH-xI-3CV.text" = "authors";
+
+/* Class = "UILabel"; text = "title"; ObjectID = "rYj-xh-Q5r"; */
+"rYj-xh-Q5r.text" = "title";
