@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import RealmSwift
+
 
 class ArticlesTableViewController: UITableViewController {
     
@@ -41,9 +43,13 @@ class ArticlesTableViewController: UITableViewController {
             tableView.addSubview(refresher)
         }
         
-        
+        //to totally remove realm file if schema is bad.
+    //try? FileManager.default.removeItem(at: Realm.Configuration.defaultConfiguration.fileURL!)
+
         
     }
+   
+
 
     //parsing jason data from api function then encode it to datamodel
     @objc func parseJson() {
@@ -58,8 +64,35 @@ class ArticlesTableViewController: UITableViewController {
                     //clear all old articles values to prepare appending it
                     self.articles.removeAll()
                     //get articles by looping into dictionary
+                    
+                    //realm
+                    let ArticlesRealmData = ArticlesList()
+                    ArticlesRealmData.title = downloadedArticles.title!
+                    let subs = downloadedArticles.articles
+                    for article in subs! {
+                        let ArticleRealmData = ArticleRealm()
+                        ArticleRealmData.title = article.title!
+                        ArticleRealmData.authors = article.authors!
+                        ArticleRealmData.website = article.website!
+                        ArticleRealmData.date = article.date!
+                        ArticleRealmData.content = article.content!
+                        ArticleRealmData.image_url = article.image_url!
+                        ArticlesRealmData.articles.append(ArticleRealmData)
+                        for tags in article.tags!  {
+                            let TagsRealmData = TagsRealm()
+                            TagsRealmData.id = String(tags.id!)
+                            TagsRealmData.label = tags.label!
+                            ArticleRealmData.tagsItem.append(TagsRealmData)
+                            }
+                        }
+                        let  realm = try! Realm()
+                        try! realm.write {
+                            realm.add(ArticlesRealmData , update: true)
+                        }
+
                     for article in downloadedArticles.articles!
                     {
+                        //appending values to table.
                         self.articles.append(article)
                     }
                 
@@ -87,6 +120,8 @@ class ArticlesTableViewController: UITableViewController {
                     })
                     
                     self.title = downloadedArticles.title
+                    //update realm
+                  //  self.addFeedToRealm()
                     self.tableView.reloadData()
                     //end refreshing data when reloaded.
                     self.refresher.endRefreshing()

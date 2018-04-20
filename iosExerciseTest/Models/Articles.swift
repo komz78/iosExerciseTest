@@ -17,7 +17,6 @@ struct Articles : Codable {
     let image_url : String?
     
     enum CodingKeys: String, CodingKey {
-        
         case title = "title"
         case website = "website"
         case authors = "authors"

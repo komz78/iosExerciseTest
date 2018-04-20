@@ -7,6 +7,7 @@
 //
 
 import Foundation
+
 struct JsonBase : Codable {
     let title : String?
     let articles : [Articles]?
@@ -24,3 +25,4 @@ struct JsonBase : Codable {
     }
     
 }
+

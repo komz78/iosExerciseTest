@@ -19,8 +19,7 @@ class LayoutDirictionViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    @IBOutlet var toggleDirections: UIButton!
-    
+
     @IBAction func toggleDirections(_ sender: Any) {
         //check for supporting swapping between directions.
         if #available(iOS 9.0, *){
@@ -42,4 +41,4 @@ class LayoutDirictionViewController: UIViewController {
         self.present(alert, animated: true, completion: nil)
     }
     
-}
+} // end of class
