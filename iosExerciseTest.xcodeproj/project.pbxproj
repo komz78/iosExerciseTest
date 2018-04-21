@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		7E7F7CC0659E0625DA780919 /* Pods_iosExerciseTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B6EBC72343B243A97C37B15 /* Pods_iosExerciseTest.framework */; };
+		AF309628208AEADC00B4CB01 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF309627208AEADC00B4CB01 /* Reachability.swift */; };
 		AF5E730320897A3B0027B5E1 /* LayoutDirictionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF5E730220897A3B0027B5E1 /* LayoutDirictionViewController.swift */; };
 		AF5E730820899ACD0027B5E1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AFDDCBC62087157400E2C202 /* Main.storyboard */; };
 		AF5E731C208A2AED0027B5E1 /* RealmObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF5E731B208A2AED0027B5E1 /* RealmObjects.swift */; };
@@ -45,6 +46,7 @@
 		1E773C6AAC83266C25BE3408 /* Pods-iosExerciseTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosExerciseTest.release.xcconfig"; path = "Pods/Target Support Files/Pods-iosExerciseTest/Pods-iosExerciseTest.release.xcconfig"; sourceTree = "<group>"; };
 		2C5D5BD7F3942CD1DBA1179A /* Pods-iosExerciseTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosExerciseTest.debug.xcconfig"; path = "Pods/Target Support Files/Pods-iosExerciseTest/Pods-iosExerciseTest.debug.xcconfig"; sourceTree = "<group>"; };
 		4B6EBC72343B243A97C37B15 /* Pods_iosExerciseTest.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iosExerciseTest.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		AF309627208AEADC00B4CB01 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		AF5E730220897A3B0027B5E1 /* LayoutDirictionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutDirictionViewController.swift; sourceTree = "<group>"; };
 		AF5E731B208A2AED0027B5E1 /* RealmObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmObjects.swift; sourceTree = "<group>"; };
 		AF879D2820872B29001E1A16 /* Tags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tags.swift; sourceTree = "<group>"; };
@@ -150,6 +152,7 @@
 				AFDDCBCB2087157A00E2C202 /* LaunchScreen.storyboard */,
 				AFDDCBC22087157400E2C202 /* AppDelegate.swift */,
 				AFDDCBCE2087157A00E2C202 /* Info.plist */,
+				AF309627208AEADC00B4CB01 /* Reachability.swift */,
 				AFDDCBC92087157A00E2C202 /* Assets.xcassets */,
 			);
 			path = iosExerciseTest;
@@ -392,6 +395,7 @@
 				AF879D322087609D001E1A16 /* DetailsViewController.swift in Sources */,
 				AF879D2920872B29001E1A16 /* Tags.swift in Sources */,
 				AFDDCBF52087180B00E2C202 /* Articles.swift in Sources */,
+				AF309628208AEADC00B4CB01 /* Reachability.swift in Sources */,
 				AFDDCBC32087157400E2C202 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

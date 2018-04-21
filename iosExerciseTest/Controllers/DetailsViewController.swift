@@ -9,7 +9,7 @@
 import UIKit
 
 class DetailsViewController: UIViewController {
-     var details: Articles?
+     var details: ArticleRealm?
     @IBOutlet var detailImage: UIImageView!
     
     @IBOutlet var detailTitle: UILabel!
@@ -27,7 +27,7 @@ class DetailsViewController: UIViewController {
     func setupUI() {
         
         //setup image lazily.
-        if !(details?.image_url?.isEmpty)! {
+        if !(details?.image_url.isEmpty)! {
             detailImage.downloadImageFrom(link: (details?.image_url)!, contentMode: UIViewContentMode.scaleToFill)
         }
         else {

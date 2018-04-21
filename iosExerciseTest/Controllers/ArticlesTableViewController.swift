@@ -13,7 +13,9 @@ import RealmSwift
 class ArticlesTableViewController: UITableViewController {
     
     //* MARK : Var
-    private var articles: [Articles] = []
+    private var articles: [Articles] = [] // for downloaded data
+    var feed: Results<ArticleRealm>!
+    var tableCount = Int()
     let jsonUrlString = "https://no89n3nc7b.execute-api.ap-southeast-1.amazonaws.com/staging/exercise"
     let cellId = "articlesCell"
     let detailSegue = "detailSegue"
@@ -28,19 +30,40 @@ class ArticlesTableViewController: UITableViewController {
     }()
     @objc func handleRefresh() {
         refresher.beginRefreshing()
-        //fetch data
-        parseJson()
+        //fetch data if connection on
+        if Reachability.isConnectedToNetwork(){
+            print("Internet Connection Available!")
+            parseJson()
+        }else{
+            //show alert
+            refresher.endRefreshing()
+
+            let alert = UIAlertController(title: "Offline", message: "No connection. \nMake sure you're connected to the internet to update statues.", preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
         
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        parseJson()
         //to stop issues with refresher in older softwares.
         if #available(iOS 10.0, *){
         tableView.refreshControl = refresher
         } else {
             tableView.addSubview(refresher)
+        }
+        
+        
+        //check internet connection!
+        if Reachability.isConnectedToNetwork(){
+            print("Internet Connection Available!")
+          parseJson()
+        }else{
+            let  realm = try! Realm()
+            feed = realm.objects(ArticleRealm.self)
+            tableCount = realm.objects(ArticleRealm.self).count
+            print("Internet Connection not Available!")
         }
         
         //to totally remove realm file if schema is bad.
@@ -56,6 +79,12 @@ class ArticlesTableViewController: UITableViewController {
         
         guard let url = URL(string: jsonUrlString) else { return }
         URLSession.shared.dataTask(with: url) { (data, response, error) in
+            if let error = error {
+            print(error)
+        } else {
+            // some other error
+        }
+        
             do {
                 let jsonDecoder = JSONDecoder()
                 let downloadedArticles = try jsonDecoder.decode(JsonBase.self, from: data!)
@@ -63,9 +92,8 @@ class ArticlesTableViewController: UITableViewController {
                 DispatchQueue.main.async {
                     //clear all old articles values to prepare appending it
                     self.articles.removeAll()
-                    //get articles by looping into dictionary
-                    
                     //realm
+                    //realm object
                     let ArticlesRealmData = ArticlesList()
                     ArticlesRealmData.title = downloadedArticles.title!
                     let subs = downloadedArticles.articles
@@ -90,12 +118,12 @@ class ArticlesTableViewController: UITableViewController {
                             realm.add(ArticlesRealmData , update: true)
                         }
 
+                    //get articles by looping
                     for article in downloadedArticles.articles!
                     {
                         //appending values to table.
                         self.articles.append(article)
                     }
-                
                     //Sorting Array.
                     self.articles.sort(by: { (Article1, Article2) -> Bool in
                         let date1 = Article1.date
@@ -121,7 +149,9 @@ class ArticlesTableViewController: UITableViewController {
                     
                     self.title = downloadedArticles.title
                     //update realm
-                  //  self.addFeedToRealm()
+                    self.feed = realm.objects(ArticleRealm.self)
+                    self.tableCount = realm.objects(ArticleRealm.self).count
+                    //reload data
                     self.tableView.reloadData()
                     //end refreshing data when reloaded.
                     self.refresher.endRefreshing()
@@ -137,22 +167,23 @@ class ArticlesTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         //get count to be populated in table view
-       return articles.count
+       return tableCount
     }
 
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as? ArticlesTableViewCell
         //setup ui labels and images.
-        cell?.title.text = articles[indexPath.row].title
-        cell?.website.text = articles[indexPath.row].website
-        cell?.authors.text = articles[indexPath.row].authors
-        cell?.date.text = articles[indexPath.row].date
+        let tableArticle = feed[indexPath.row]
+        cell?.title.text = tableArticle.title
+        cell?.website.text = tableArticle.website
+        cell?.authors.text = tableArticle.authors
+        cell?.date.text = tableArticle.date
         //get image lazely
         cell?.imageCell.image = UIImage(named: "placeholder")  //set placeholder image first.
         // to stop casting error -1002 for empty urls we performe this condition
-        if !(articles[indexPath.row].image_url?.isEmpty)! {
-        cell?.imageCell?.downloadImageFrom(link: articles[indexPath.row].image_url!, contentMode: UIViewContentMode.scaleAspectFit)
+        if !(tableArticle.image_url.isEmpty) {
+            cell?.imageCell?.downloadImageFrom(link: tableArticle.image_url, contentMode: UIViewContentMode.scaleAspectFit)
            //cell?.imageCell?.layer.mask?.cornerRadius = 77
         }
         else {
@@ -183,7 +214,7 @@ class ArticlesTableViewController: UITableViewController {
             if let detailsVc = segue.destination as? DetailsViewController {
                 //the sender indexpath
                 let selected = sender as! NSIndexPath
-                detailsVc.details = articles[selected.row]
+                detailsVc.details = feed[selected.row]  
             }
         }
     }
