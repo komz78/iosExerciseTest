@@ -108,14 +108,14 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
-		AF78B120208B869D000CFCBC /* RealmDb */ = {
+		AF78B120208B869D000CFCBC /* RealmDbObjects */ = {
 			isa = PBXGroup;
 			children = (
 				AF5E731B208A2AED0027B5E1 /* ArticlesList.swift */,
 				AF78B121208B86EE000CFCBC /* ArticleRealm.swift */,
 				AF78B123208B8717000CFCBC /* TagsRealm.swift */,
 			);
-			path = RealmDb;
+			path = RealmDbObjects;
 			sourceTree = "<group>";
 		};
 		AF879D2E20874A3F001E1A16 /* Layout */ = {
@@ -192,7 +192,7 @@
 		AFDDCBF0208715B800E2C202 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				AF78B120208B869D000CFCBC /* RealmDb */,
+				AF78B120208B869D000CFCBC /* RealmDbObjects */,
 				AF879D2A20872B95001E1A16 /* JsonBase.swift */,
 				AFDDCBF42087180B00E2C202 /* Articles.swift */,
 				AF879D2820872B29001E1A16 /* Tags.swift */,

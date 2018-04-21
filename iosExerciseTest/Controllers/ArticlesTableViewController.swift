@@ -12,7 +12,7 @@ import RealmSwift
 
 class ArticlesTableViewController: UITableViewController {
     
-    //* MARK : Var
+    //* MARK : Vars
     private var articles: [Articles] = [] // for downloaded data
     var feed: Results<ArticleRealm>! // realm object
     var tableCount = Int()
@@ -43,32 +43,38 @@ class ArticlesTableViewController: UITableViewController {
         //try? FileManager.default.removeItem(at: Realm.Configuration.defaultConfiguration.fileURL!)
     }
     
-    
     //MARK : Refresher and a function to handle the table when refreshing
     lazy var refresher: UIRefreshControl = {
+        
         let refreshControl = UIRefreshControl()
         //call handle refresh function
         refreshControl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
         return refreshControl
+        
     }()
     @objc func handleRefresh() {
+        
         refresher.beginRefreshing()
         //fetch data if connection on
         if Reachability.isConnectedToNetwork(){
             print("Internet Connection Available!")
             parseJson()
+            
         }else{
+            
             refresher.endRefreshing()
             //show alert
             let alert = UIAlertController(title: "Offline", message: "No connection. \nMake sure you're connected to the internet to update statues.", preferredStyle: UIAlertControllerStyle.alert)
             alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: nil))
             self.present(alert, animated: true, completion: nil)
+            
         }
         
     }
    
     //MARK: parsing jason data from api function then encode it to datamodel
     @objc func parseJson() {
+        
         guard let url = URL(string: jsonUrlString) else { return }
         URLSession.shared.dataTask(with: url) { (data, response, error) in
             if let error = error {
@@ -82,6 +88,7 @@ class ArticlesTableViewController: UITableViewController {
                 
             }
             do {
+                
                 //decode json api
                 let jsonDecoder = JSONDecoder()
                 let downloadedArticles = try jsonDecoder.decode(JsonBase.self, from: data!)
@@ -91,8 +98,10 @@ class ArticlesTableViewController: UITableViewController {
                     self.articles.removeAll()
                     //get articles by looping
                     for article in downloadedArticles.articles!{
+                        
                         //appending values to array.
                         self.articles.append(article)
+                        
                     }
                     //Sorting the fetched api Array. "articles: [Articles] = []"
                     self.sortFetchedArray()
@@ -111,16 +120,19 @@ class ArticlesTableViewController: UITableViewController {
                         ArticlesRealmData.articles.append(ArticleRealmData)
                         
                         for tags in article.tags!  {
+                            
                             let TagsRealmData = TagsRealm()
                             TagsRealmData.id = String(tags.id!)
                             TagsRealmData.label = tags.label!
                             ArticleRealmData.tagsItem.append(TagsRealmData)
+                            
                         }
                     }
                     let  realm = try! Realm()
                     try! realm.write {
                         realm.add(ArticlesRealmData , update: true)
                     }
+                    
                     //set the title from json
                     self.title = downloadedArticles.title
                     //update realm objects
@@ -131,16 +143,20 @@ class ArticlesTableViewController: UITableViewController {
                     self.tableView.reloadData()
                     //end refreshing data when reloaded.
                     self.refresher.endRefreshing()
+                    
                 }
             }
             catch let error {
+                
                 print("Error fetching:", error)
+                
             }
         }.resume()
     }
     
     //MARK: - Sort fetched array
     func sortFetchedArray(){
+        
         self.articles.sort(by: { (Article1, Article2) -> Bool in
         let date1 = Article1.date
         let date2 = Article2.date
@@ -148,7 +164,9 @@ class ArticlesTableViewController: UITableViewController {
         let title2 = Article2.title?.lowercased()
         let author1 = Article1.authors?.lowercased()
         let author2 = Article2.authors?.lowercased()
+            
             //compare date
+            
         if date1! > date2! {
             return false
             }
@@ -173,6 +191,7 @@ class ArticlesTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as? ArticlesTableViewCell
+        
         //setup ui labels and images.
         let tableArticle = feed[indexPath.row]
         cell?.title.text = tableArticle.title
