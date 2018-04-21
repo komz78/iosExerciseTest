@@ -35,9 +35,8 @@ class ArticlesTableViewController: UITableViewController {
             print("Internet Connection Available!")
             parseJson()
         }else{
-            //show alert
             refresher.endRefreshing()
-
+            //show alert
             let alert = UIAlertController(title: "Offline", message: "No connection. \nMake sure you're connected to the internet to update statues.", preferredStyle: UIAlertControllerStyle.alert)
             alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: nil))
             self.present(alert, animated: true, completion: nil)
@@ -53,38 +52,28 @@ class ArticlesTableViewController: UITableViewController {
         } else {
             tableView.addSubview(refresher)
         }
-        
-        
-        //check internet connection!
+        //when view load check internet connection! if offline don't parsejason function so it doesn't cast errors
         if Reachability.isConnectedToNetwork(){
             print("Internet Connection Available!")
           parseJson()
         }else{
+            //get realm objects
             let  realm = try! Realm()
             feed = realm.objects(ArticleRealm.self)
             tableCount = realm.objects(ArticleRealm.self).count
             print("Internet Connection not Available!")
         }
-        
-        //to totally remove realm file if schema is bad.
-    //try? FileManager.default.removeItem(at: Realm.Configuration.defaultConfiguration.fileURL!)
-
-        
+        //Manage the schema of realm file by deleting it from device.
+        try? FileManager.default.removeItem(at: Realm.Configuration.defaultConfiguration.fileURL!)
     }
    
-
-
     //parsing jason data from api function then encode it to datamodel
     @objc func parseJson() {
-        
         guard let url = URL(string: jsonUrlString) else { return }
         URLSession.shared.dataTask(with: url) { (data, response, error) in
             if let error = error {
             print(error)
-        } else {
-            // some other error
-        }
-        
+            }
             do {
                 let jsonDecoder = JSONDecoder()
                 let downloadedArticles = try jsonDecoder.decode(JsonBase.self, from: data!)
@@ -92,8 +81,7 @@ class ArticlesTableViewController: UITableViewController {
                 DispatchQueue.main.async {
                     //clear all old articles values to prepare appending it
                     self.articles.removeAll()
-                    //realm
-                    //realm object
+                    //append to realm objects
                     let ArticlesRealmData = ArticlesList()
                     ArticlesRealmData.title = downloadedArticles.title!
                     let subs = downloadedArticles.articles
@@ -113,43 +101,22 @@ class ArticlesTableViewController: UITableViewController {
                             ArticleRealmData.tagsItem.append(TagsRealmData)
                             }
                         }
-                        let  realm = try! Realm()
-                        try! realm.write {
-                            realm.add(ArticlesRealmData , update: true)
-                        }
-
+                    let  realm = try! Realm()
+                    try! realm.write {
+                    realm.add(ArticlesRealmData , update: true)
+                    }
                     //get articles by looping
-                    for article in downloadedArticles.articles!
-                    {
+                    for article in downloadedArticles.articles!{
                         //appending values to table.
                         self.articles.append(article)
                     }
-                    //Sorting Array.
-                    self.articles.sort(by: { (Article1, Article2) -> Bool in
-                        let date1 = Article1.date
-                        let date2 = Article2.date
-                        let title1 = Article1.title?.lowercased()
-                        let title2 = Article2.title?.lowercased()
-                        let author1 = Article1.authors?.lowercased()
-                        let author2 = Article2.authors?.lowercased()
-                            //compare date
-                            if date1! > date2! {
-                                return false
-                            }
-                            //then compare title
-                            if title1! > title2! {
-                                return true
-                            }
-                            //then compare author
-                            if author1! > author2! {
-                                return true
-                            }
-                        return true
-                    })
-                    
+                    //Sorting the fetched api Array. "articles: [Articles] = []"
+                    self.sortFetchedArray()
+                    //set the title from json
                     self.title = downloadedArticles.title
                     //update realm
                     self.feed = realm.objects(ArticleRealm.self)
+                    //update tablecount value
                     self.tableCount = realm.objects(ArticleRealm.self).count
                     //reload data
                     self.tableView.reloadData()
@@ -162,6 +129,30 @@ class ArticlesTableViewController: UITableViewController {
             }
         }.resume()
     }
+    
+    func sortFetchedArray(){
+        self.articles.sort(by: { (Article1, Article2) -> Bool in
+        let date1 = Article1.date
+        let date2 = Article2.date
+        let title1 = Article1.title?.lowercased()
+        let title2 = Article2.title?.lowercased()
+        let author1 = Article1.authors?.lowercased()
+        let author2 = Article2.authors?.lowercased()
+            //compare date
+        if date1! > date2! {
+            return false
+            }
+            //then compare title
+            if title1! > title2! {
+            return true
+            }
+            //then compare author
+            if author1! > author2! {
+                return true
+            }
+            return true
+        })
+    }
 
     // MARK: - Table view data source
 
@@ -169,7 +160,6 @@ class ArticlesTableViewController: UITableViewController {
         //get count to be populated in table view
        return tableCount
     }
-
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as? ArticlesTableViewCell
@@ -184,7 +174,6 @@ class ArticlesTableViewController: UITableViewController {
         // to stop casting error -1002 for empty urls we performe this condition
         if !(tableArticle.image_url.isEmpty) {
             cell?.imageCell?.downloadImageFrom(link: tableArticle.image_url, contentMode: UIViewContentMode.scaleAspectFit)
-           //cell?.imageCell?.layer.mask?.cornerRadius = 77
         }
         else {
             print("no image")
@@ -197,30 +186,29 @@ class ArticlesTableViewController: UITableViewController {
         //when the view appears do the estimated row height and dimention.
         tableView.estimatedRowHeight = 200
         tableView.rowHeight = UITableViewAutomaticDimension
+        // to update ui when the view layout is toggled
+        self.tableView.reloadData()
     }
     
  
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     {
-        //then it will do to the prepare for segue to send values and navigate to the desired view controller.
         //set sender indexpath so you can get the article value.
+        //then it will do to the prepare for segue to send values and navigate to the desired view controller.
         performSegue(withIdentifier: detailSegue, sender: indexPath)
     }
     
     // MARK: - Navigation
-
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == detailSegue ){
             if let detailsVc = segue.destination as? DetailsViewController {
-                //the sender indexpath
+                //the sender indexPath
                 let selected = sender as! NSIndexPath
-                detailsVc.details = feed[selected.row]  
+                detailsVc.details = feed[selected.row]
             }
         }
     }
     
-
-
 } // end of class
 
 

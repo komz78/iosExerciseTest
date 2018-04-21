@@ -128,7 +128,7 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" id="PLw-vg-zBX">
-                        <barButtonItem key="rightBarButtonItem" style="plain" systemItem="refresh" id="Cb9-lx-bVV">
+                        <barButtonItem key="rightBarButtonItem" title="Toggle Layout style" id="Cb9-lx-bVV">
                             <connections>
                                 <segue destination="BjX-iJ-4Ah" kind="show" id="DYY-xA-OfD"/>
                             </connections>
