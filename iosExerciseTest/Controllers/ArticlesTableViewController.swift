@@ -14,11 +14,34 @@ class ArticlesTableViewController: UITableViewController {
     
     //* MARK : Var
     private var articles: [Articles] = [] // for downloaded data
-    var feed: Results<ArticleRealm>!
+    var feed: Results<ArticleRealm>! // realm object
     var tableCount = Int()
     let jsonUrlString = "https://no89n3nc7b.execute-api.ap-southeast-1.amazonaws.com/staging/exercise"
     let cellId = "articlesCell"
     let detailSegue = "detailSegue"
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        //to stop issues with refresher in older softwares.
+        if #available(iOS 10.0, *){
+            tableView.refreshControl = refresher
+        } else {
+            tableView.addSubview(refresher)
+        }
+        //when view load check internet connection! if offline don't parsejason function so it doesn't cast errors
+        if Reachability.isConnectedToNetwork(){
+            print("Internet Connection Available!")
+          parseJson()
+        }else{
+            //get realm objects
+            let realm = try! Realm()
+            feed = realm.objects(ArticleRealm.self)
+            tableCount = realm.objects(ArticleRealm.self).count
+            print("Internet Connection not Available!")
+        }
+        //Manage the schema of realm file by deleting it from device.
+        //try? FileManager.default.removeItem(at: Realm.Configuration.defaultConfiguration.fileURL!)
+    }
     
     
     //MARK : Refresher and a function to handle the table when refreshing
@@ -43,49 +66,41 @@ class ArticlesTableViewController: UITableViewController {
         }
         
     }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        //to stop issues with refresher in older softwares.
-        if #available(iOS 10.0, *){
-        tableView.refreshControl = refresher
-        } else {
-            tableView.addSubview(refresher)
-        }
-        //when view load check internet connection! if offline don't parsejason function so it doesn't cast errors
-        if Reachability.isConnectedToNetwork(){
-            print("Internet Connection Available!")
-          parseJson()
-        }else{
-            //get realm objects
-            let  realm = try! Realm()
-            feed = realm.objects(ArticleRealm.self)
-            tableCount = realm.objects(ArticleRealm.self).count
-            print("Internet Connection not Available!")
-        }
-        //Manage the schema of realm file by deleting it from device.
-        try? FileManager.default.removeItem(at: Realm.Configuration.defaultConfiguration.fileURL!)
-    }
    
-    //parsing jason data from api function then encode it to datamodel
+    //MARK: parsing jason data from api function then encode it to datamodel
     @objc func parseJson() {
         guard let url = URL(string: jsonUrlString) else { return }
         URLSession.shared.dataTask(with: url) { (data, response, error) in
             if let error = error {
             print(error)
             }
+            if response == nil && data == nil{
+                let alert = UIAlertController(title: "Offline", message: "No response. \nMake sure you're connected to the internet to update statues.", preferredStyle: UIAlertControllerStyle.alert)
+                alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+                return
+                
+            }
             do {
+                //decode json api
                 let jsonDecoder = JSONDecoder()
                 let downloadedArticles = try jsonDecoder.decode(JsonBase.self, from: data!)
                 //perform a GCD queue so it works in the main thread.
                 DispatchQueue.main.async {
                     //clear all old articles values to prepare appending it
                     self.articles.removeAll()
-                    //append to realm objects
+                    //get articles by looping
+                    for article in downloadedArticles.articles!{
+                        //appending values to array.
+                        self.articles.append(article)
+                    }
+                    //Sorting the fetched api Array. "articles: [Articles] = []"
+                    self.sortFetchedArray()
+                    //append sorted array to realm objects
                     let ArticlesRealmData = ArticlesList()
                     ArticlesRealmData.title = downloadedArticles.title!
-                    let subs = downloadedArticles.articles
-                    for article in subs! {
+                    let subs = self.articles
+                    for article in subs {
                         let ArticleRealmData = ArticleRealm()
                         ArticleRealmData.title = article.title!
                         ArticleRealmData.authors = article.authors!
@@ -94,27 +109,21 @@ class ArticlesTableViewController: UITableViewController {
                         ArticleRealmData.content = article.content!
                         ArticleRealmData.image_url = article.image_url!
                         ArticlesRealmData.articles.append(ArticleRealmData)
+                        
                         for tags in article.tags!  {
                             let TagsRealmData = TagsRealm()
                             TagsRealmData.id = String(tags.id!)
                             TagsRealmData.label = tags.label!
                             ArticleRealmData.tagsItem.append(TagsRealmData)
-                            }
                         }
+                    }
                     let  realm = try! Realm()
                     try! realm.write {
-                    realm.add(ArticlesRealmData , update: true)
+                        realm.add(ArticlesRealmData , update: true)
                     }
-                    //get articles by looping
-                    for article in downloadedArticles.articles!{
-                        //appending values to table.
-                        self.articles.append(article)
-                    }
-                    //Sorting the fetched api Array. "articles: [Articles] = []"
-                    self.sortFetchedArray()
                     //set the title from json
                     self.title = downloadedArticles.title
-                    //update realm
+                    //update realm objects
                     self.feed = realm.objects(ArticleRealm.self)
                     //update tablecount value
                     self.tableCount = realm.objects(ArticleRealm.self).count
@@ -130,6 +139,7 @@ class ArticlesTableViewController: UITableViewController {
         }.resume()
     }
     
+    //MARK: - Sort fetched array
     func sortFetchedArray(){
         self.articles.sort(by: { (Article1, Article2) -> Bool in
         let date1 = Article1.date
